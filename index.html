@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="pt">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ManoCê - Plataforma de Explicações (Protótipo)</title>
+<style>
+  :root{
+    --verde:gold;
+    --preto:black;
+    --azul:#1e90ff;
+    --dourado:#c59b21;
+    --vermelho:#d64545;
+    --bg: red;
+    --card:skyblue;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter, system-ui, Arial; margin:0; background:var(--bg); color:var(--preto)}
+  header{background:linear-gradient(90deg,var(--verde),var(--azul)); color:blue; padding:14px 18px; display:flex;align-items:center;gap:16px}
+  .logo{font-weight:700;letter-spacing:1px}
+  nav{margin-left:auto;display:flex;gap:12px}
+  a.nav{color:rgba(aqua);text-decoration:none;padding:8px 12px;border-radius:8px}
+  a.nav:hover{background:rgba(0,0,0,0.08)}
+  main{max-width:1100px;margin:24px auto;padding:0 16px}
+  .hero{background:linear-gradient(180deg, rgba(0,0,0,0.04), transparent); padding:28px;border-radius:12px;display:flex;gap:18px;align-items:center}
+  .hero .text h1{margin:0 0 8px 0}
+  .hero .actions{margin-top:8px}
+  .btn{display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;color:gold;background:var(--preto);cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--preto);border:1px solid rgba(0,0,0,0.08)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+  .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+  .small{font-size:13px;color:maroon}
+  footer{max-width:1100px;margin:28px auto;padding:18px;color:green}
+  /* simple router panes */
+  .pane{display:none}
+  .pane.active{display:block}
+  /* login modal */
+  .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);}
+  .modal .box{width:360px;background:blue;padding:18px;border-radius:10px}
+  input,select{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #e3e7}
+  label{font-weight:600;font-size:13px}
+  .flex{display:flex;gap:8px}
+  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f;font-size:13px}
+  .tag{font-size:12px;color:#777}
+  /* responsive small */
+  @media(max-width:640px){header{padding:12px} .hero{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">ManoCê</div>
+  <div class="tag">Explicações 7.º–12.º</div>
+  <nav>
+    <a class="nav" href="#/">Início</a>
+    <a class="nav" href="#/cursos">Cursos</a>
+    <a class="nav" href="#/minhas-aulas">Minhas Aulas</a>
+    <a class="nav" href="#/sobre">Sobre</a>
+    <a class="nav" id="loginBtn" href="#/login">Entrar / Registar</a>
+  </nav>
+</header>
+<main>
+  <!-- Home -->
+  <section id="home" class="pane active">
+    <div class="hero card">
+      <div class="text">
+        <h1>Plataforma ManoCê — Explicações Online</h1>
+        <p class="small">Aulas ao vivo e gravadas para 7.º a 12.º classe. Pagamento por assinatura mensal — bolsa disponível para alunos selecionados.</p>
+        <div class="actions">
+          <button class="btn" onclick="navigate('/cursos')">Explorar Cursos</button>
+          <button class="btn ghost" onclick="openLogin()">Entrar</button>
+        </div>
+      </div>
+      <div style="margin-left:auto;max-width:360px">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small">Seu plano</div>
+              <div style="font-weight:700">Gratuito (teste)</div>
+            </div>
+            <div class="chip" id="statusChip">Não subscrito</div>
+          </div>
+          <p class="small" style="margin-top:10px">Subscreve para aceder a todas as aulas e materiais. Pagamento mensal.</p>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" onclick="subscribe()">Subscrever</button>
+            <button class="btn ghost" onclick="openLogin()">Entrar</button>
+          </div>
+        </div>
+      </div>
+    </div><h3 style="margin-top:18px">Salas por nível</h3>
+<div class="grid">
+  <!-- generate years 7-12 -->
+</div>
+
+  </section>  <!-- Cursos -->  <section id="cursos" class="pane">
+    <h2>Todos os Cursos / Disciplinas</h2>
+    <p class="small">Escolhe um ano e uma disciplina. Temos aulas gravadas, materiais e quizzes.</p>
+    <div class="grid" id="coursesGrid">
+    </div>
+  </section>  <!-- Minhas Aulas (dashboard do aluno) -->  <section id="minhas-aulas" class="pane">
+    <h2>Dashboard — Minhas Aulas</h2>
+    <div id="dashboardArea">
+      <div class="card">
+        <h3>Progresso</h3>
+        <p class="small">Nenhuma aula vista ainda.</p>
+      </div>
+    </div>
+  </section>  <!-- Aula (player + material + quiz) -->  <section id="aula" class="pane">
+    <button class="btn ghost" onclick="navigate('/cursos')">← Voltar</button>
+    <div id="lessonArea"></div>
+  </section>  <!-- Sobre -->  <section id="sobrePane" class="pane">
+    <h2>Sobre ManoCê</h2>
+    <p class="small">Plataforma criada para facilitar explicações presenciais e online em Moçambique. Projeto protótipo entregue para testes em Acode.</p>
+  </section>  <!-- Login modal / page -->  <section id="login" class="pane">
+    <div class="card" style="max-width:560px">
+      <h3>Entrar / Registar</h3>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <div style="flex:1">
+          <label>Email</label>
+          <input id="emailInput" type="email" placeholder="email@exemplo.com" />
+        </div>
+        <div style="width:140px">
+          <label>Telefone</label>
+          <input id="phoneInput" type="text" placeholder="+258 8x xxx xxxx" />
+        </div>
+      </div>
+      <label>Nome</label>
+      <input id="nameInput" placeholder="Nome completo" />
+      <label>Selecione papel</label>
+      <select id="roleSelect">
+        <option value="student">Aluno</option>
+        <option value="teacher">Professor</option>
+      </select>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn" onclick="register()">Registar / Entrar</button>
+        <button class="btn ghost" onclick="logout()">Sair</button>
+      </div>
+    </div>
+  </section>  <!-- Admin/Teacher simple area (hidden until role) -->  <section id="admin" class="pane">
+    <h2>Painel (Admin / Professor) — Gestão rápida</h2>
+    <div class="grid">
+      <div class="card">
+        <h4>Gerir Alunos</h4>
+        <p class="small">Lista de inscritos (simulação local)</p>
+        <div id="studentsList"></div>
+      </div>
+      <div class="card">
+        <h4>Criar Aula Rápida</h4>
+        <label>Título</label>
+        <input id="quickTitle" placeholder="Ex: Equações simples (9.º)" />
+        <label>Descrição</label>
+        <input id="quickDesc" placeholder="Breve descrição" />
+        <label>Video URL (YouTube)</label>
+        <input id="quickVideo" placeholder="https://www.youtube.com/watch?v=..." />
+        <button class="btn" style="margin-top:8px" onclick="createQuickLesson()">Criar Aula</button>
+      </div>
+    </div>
+  </section></main>
+<footer>
+  © ManoCê — Protótipo • Cores: verde, preto, azul, dourado, vermelho
+</footer><!-- Simple JS router + logic --><script>
+(function(){
+  // initial data
+  const YEARS=[7,8,9,10,11,12];
+  const subjects=['Matemática','Português','Ciências','História','Geografia','Inglês','Física','Química'];
+  const app = {user:null,subscribed:false};
+
+  // util
+  function qs(id){return document.getElementById(id)}
+  function navigate(p){location.hash = '#'+p}
+  window.navigate = navigate;
+  function showPane(name){document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active')); let map={"/":'home','/cursos':'cursos','/minhas-aulas':'minhas-aulas','/sobre':'sobrePane','/login':'login','/aula':'aula','/admin':'admin'}; const id=map[name]||'home'; document.getElementById(id).classList.add('active')}
+
+  function renderYears(){const grid=document.querySelector('#home .grid'); grid.innerHTML=''; YEARS.forEach(y=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<h4>Classe ${y}ª</h4><p class=\"small\">Aulas e materiais para o ${y}º ano</p><div style=\"margin-top:8px\">`+subjects.slice(0,4).map(s=>`<button class=\"btn ghost\" style=\"margin-right:6px;margin-top:6px\" onclick=\"openCourse(${y},\'${s}\')\">${s}</button>`).join('')+`</div>`;grid.appendChild(card)})}
+
+  function renderCourses(){const g=qs('coursesGrid'); g.innerHTML=''; YEARS.forEach(y=>{subjects.forEach(s=>{const c=document.createElement('div');c.className='card'; c.innerHTML=`<h4>${s} — ${y}ª</h4><p class='small'>Ex: módulo introdutório com vídeos + quizzes</p><div style='margin-top:10px'><button class='btn' onclick="openCourse(${y},'${s}')">Ver aulas</button></div>`; g.appendChild(c)})})}
+
+  window.openCourse=function(year,subject){navigate('/aula'); showPane('/aula'); renderLessonPage(year,subject)}
+
+  function renderLessonPage(y,s){const area=qs('lessonArea'); area.innerHTML=''; const header=document.createElement('div'); header.className='card'; header.innerHTML=`<h3>${s} — ${y}ªclasse</h3><p class='small'>Aula exemplo — vídeo embutido + material + quiz</p>`;
+    const videoCard=document.createElement('div'); videoCard.className='card'; videoCard.style.marginTop='12px'; videoCard.innerHTML=`<h4>Aula: Introdução</h4><div><iframe width="100%" height="360" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Aula" frameborder="0" allowfullscreen></iframe></div><p class='small'>Material: <a href='#'>Ficha em PDF (exemplo)</a></p>`;
+    const quiz=document.createElement('div'); quiz.className='card'; quiz.style.marginTop='12px'; quiz.innerHTML=`<h4>Quiz Rápido</h4><p class='small'>1) 2+2 = ?</p><div><label><input type='radio' name='q1' value='3'> 3</label><br><label><input type='radio' name='q1' value='4'> 4</label><br><label><input type='radio' name='q1' value='5'> 5</label></div><button class='btn' style='margin-top:8px' onclick='submitQuiz()'>Enviar resposta</button><div id='quizResult' style='margin-top:8px'></div>`;
+    area.appendChild(header); area.appendChild(videoCard); area.appendChild(quiz)
+  }
+
+  window.submitQuiz=function(){const sel=document.querySelector('input[name=q1]:checked'); if(!sel){qs('quizResult').innerText='Escolhe uma opção'; return} qs('quizResult').innerText = sel.value==='4' ? 'Correto! ✔' : 'Incorreto — tenta novamente' }
+
+  // subscription mock
+  window.subscribe=function(){if(!app.user){alert('Faz login primeiro.'); openLogin(); return} app.subscribed=true; localStorage.setItem('manoce_subscribed','1'); qs('statusChip').innerText='Subscrito'; alert('Subscrição mensal ativa (simulada)') }
+
+  // simple auth (local)
+  window.openLogin=function(){location.hash='#/login'; showPane('/login')}
+  window.register=function(){const email=qs('emailInput').value.trim(); const name=qs('nameInput').value.trim(); const phone=qs('phoneInput').value.trim(); const role=qs('roleSelect').value; if(!email||!name){alert('Nome e email são necessários');return} app.user={email,name,phone,role}; localStorage.setItem('manoce_user',JSON.stringify(app.user)); alert('Bem-vindo, '+name); qs('loginBtn').innerText = name.split(' ')[0]; // update UI
+    // show admin if teacher
+    if(role!=='student'){navigate('/admin'); showPane('/admin'); renderAdmin()} else {navigate('/minhas-aulas'); showPane('/minhas-aulas'); renderDashboard()} }
+
+  window.logout=function(){localStorage.removeItem('manoce_user'); app.user=null; qs('loginBtn').innerText='Entrar / Registar'; alert('Sessão terminada'); navigate('/'); showPane('/');}
+
+  function renderDashboard(){const d=qs('dashboardArea'); d.innerHTML=''; const c=document.createElement('div'); c.className='card'; c.innerHTML=`<h3>Bem vindo, ${app.user?app.user.name:'convidado'}</h3><p class='small'>Tu estás ${localStorage.getItem('manoce_subscribed')?'<strong>subscrito</strong>':'<strong>não subscrito</strong>'}.</p>`; d.appendChild(c)}
+
+  function renderAdmin(){qs('studentsList').innerHTML=''; const list=document.createElement('div'); list.innerHTML=''; // load mock students
+    const students=JSON.parse(localStorage.getItem('manoce_students')||'[{"name":"Ana","email":"ana@mail.com"},{"name":"João","email":"joao@mail.com"}]'); students.forEach((s,idx)=>{const el=document.createElement('div'); el.style.padding='8px 0'; el.innerHTML=`<div style=\"display:flex;justify-content:space-between;align-items:center\"><div><strong>${s.name}</strong><div class=\"small\">${s.email}</div></div><div><button class=\"btn ghost\" onclick=\"desclassificar(${idx})\">Desclassificar</button></div></div>`; qs('studentsList').appendChild(el)});
+  }
+
+  window.desclassificar=function(idx){if(!confirm('Remover aluno?'))return; const students=JSON.parse(localStorage.getItem('manoce_students')||'[]'); students.splice(idx,1); localStorage.setItem('manoce_students',JSON.stringify(students)); renderAdmin(); alert('Aluno removido (simulado)') }
+
+  window.createQuickLesson=function(){const t=qs('quickTitle').value.trim(); const d=qs('quickDesc').value.trim(); const v=qs('quickVideo').value.trim(); if(!t){alert('Título necessário');return} // store in localStorage list
+    const lessons=JSON.parse(localStorage.getItem('manoce_lessons')||'[]'); lessons.push({title:t,desc:d,video:v,id:Date.now()}); localStorage.setItem('manoce_lessons',JSON.stringify(lessons)); alert('Aula criada (simulada)'); }
+
+  // render courses/years
+  renderYears(); renderCourses();
+
+  // router on hash change
+  function onRoute(){ const h = location.hash.replace('#','')||'/'; showPane(h); if(h.startsWith('/aula')){/* handled on openCourse */} }
+  window.addEventListener('hashchange', onRoute);
+  onRoute();
+
+  // load user state
+  const savedUser = JSON.parse(localStorage.getItem('manoce_user')||'null'); if(savedUser){app.user=savedUser; qs('loginBtn').innerText = app.user.name.split(' ')[0]} if(localStorage.getItem('manoce_subscribed')){app.subscribed=true; qs('statusChip').innerText='Subscrito'}
+
+  // initial admin render if needed
+  if(app.user && app.user.role !== 'student'){ /* show admin link */ }
+
+  // expose small funcs
+  window.renderAdmin=renderAdmin; window.renderDashboard=renderDashboard;
+})();
+</script></body>
+</html>
